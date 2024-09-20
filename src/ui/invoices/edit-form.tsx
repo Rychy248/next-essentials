@@ -1,6 +1,6 @@
 'use client';
 
-import { CustomerField, InvoiceForm } from '@/temp_app/lib/definitions';
+import { CustomerField, InvoiceForm } from '@/src/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
