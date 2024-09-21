@@ -39,8 +39,6 @@ export default function Page() {
     });
     
   }, []);
-  console.log(revenue);
-  console.log(latestInvoices);
 
   return (
     <main>
