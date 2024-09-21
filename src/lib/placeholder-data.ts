@@ -144,4 +144,49 @@ const revenue = [
   { month: 'Dec', revenue: 4800 },
 ];
 
-export { users, customers, invoices, revenue };
+const latestInvoices = [
+  {
+    id:'e899d828-1c40-4dc0-974e-8af8c0a83349',
+    name:'Michael Novotny',
+    image_url:'/customers/michael-novotny.png',
+    email:'michael@novotny.com',
+    amount:'44800',
+  },
+  {
+    id:'a4e5137b-841e-4696-80a5-4af907170895',
+    name:'Delba de Oliveira',
+    image_url:'/customers/delba-de',
+    email:'oliveira.png	delba@',
+    amount:'500'
+  },
+  {
+    id:'ca313845-5c80-4ced-bc50-b3372b791dfc',
+    name:'Balazs Orban',
+    image_url:'/customers/balazs-orban.png',
+    email:'balazs@orban.com	',
+    amount:'34577'
+  },
+  {
+    id:'8191dd9e-73d7-435b-94e1-a579aa07f2b4',
+    name:'Lee Robinson',
+    image_url:'/customers/lee-robinson.png',
+    email:'lee@robinson.com	',
+    amount:'54246'
+  },
+  {
+    id:'aec2886c-53c1-456f-b68c-e48b6a08d495',
+    name:'Evil Rabbit',
+    image_url:'/customers/evil-rabbit.png',
+    email:'evil@rabbit.com	',
+    amount:'666'
+  }
+];
+
+const cardData = {
+  numberOfCustomers:6,
+  numberOfInvoices:13,
+  totalPaidInvoices:100626,
+  totalPendingInvoices:125632,
+}
+
+export { users, customers, invoices, revenue, latestInvoices, cardData };
