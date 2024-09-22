@@ -1,3 +1,5 @@
+'use client';
+import { useEffect, useState } from 'react';
 import { CustomerField } from '@/src/lib/definitions';
 import Link from 'next/link';
 import {
@@ -8,9 +10,35 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@ui/button';
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+import { createInvoice } from '@actions/invoices/actions';
+
+interface CustomerRes {
+  customers:CustomerField[]
+}
+
+export default function Form({  }) {
+  const [customersState, setCustomersState] = useState('loading');
+  const [customers, setCustomers] = useState<CustomerField[]>([]);
+  // const customers = await fetchCustomers();
+  useEffect(() => {
+    let isMounted = true;
+
+    (async () => {
+      const res = await fetch('/api/fetchCustomers');
+      const result:CustomerRes = await res.json();
+      setCustomers(result.customers);
+    })()
+      .catch(console.log)
+      .finally(()=>{
+        setCustomersState('loaded');
+      })
+    ;
+    return () => { isMounted =false; };
+
+  }, []);
+
   return (
-    <form>
+    <form action={createInvoice}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -27,11 +55,14 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <option value="" disabled>
                 Select a customer
               </option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
-                </option>
-              ))}
+              {customersState === 'loading'
+                ? <option value='' disabled>Loading...</option>
+                :(customers.map((customer) => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.name}
+                  </option>
+                )))
+              }
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>

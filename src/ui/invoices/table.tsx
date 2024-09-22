@@ -22,7 +22,10 @@ export default function InvoicesTable({
   
   /** GET THE CURRENT PAGE AT THIS WAY IS POSSIBLE CAUSE THIS COMPONENT IS AT THE CLIENT SIDE */
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get('currentPage')) || 1;
+  const currentPage = searchParams
+    ? Number(searchParams.get('currentPage'))
+    : 1
+  ;
   /** GET THE CURRENT INSTEAD OF PROPS*/
   
   const [load, setLoad] = useState<string>('loading');

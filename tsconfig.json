@@ -21,7 +21,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@ui/*": ["./src/ui/*"]
+      "@ui/*": ["./src/ui/*"],
+      "@features/*": ["./src/features/*"],
+      "@actions/*": ["./src/server-actions/*"]
     }
   },
   "include": [

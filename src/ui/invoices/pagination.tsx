@@ -13,8 +13,11 @@ export default function Pagination({
   // NOTE: Uncomment this code in Chapter 11
 
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get('currentPage')) || 1;
+  const searchParams = useSearchParams() || '';
+  const currentPage = searchParams
+    ? Number(searchParams.get('currentPage'))
+    : 1
+  ;
 
   const allPages = generatePagination(currentPage, totalPages);
 
