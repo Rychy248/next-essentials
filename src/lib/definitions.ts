@@ -90,6 +90,6 @@ export type InvoiceForm = {
 export type CardData ={
   numberOfCustomers:number,
   numberOfInvoices:number,
-  totalPaidInvoices:number,
-  totalPendingInvoices:number,
+  totalPaidInvoices:string,
+  totalPendingInvoices:string,
 }

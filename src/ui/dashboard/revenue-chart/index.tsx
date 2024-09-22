@@ -3,6 +3,7 @@ import { generateYAxis } from '@/src/lib/utils';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@ui/fonts';
 import { Revenue } from '@/src/lib/definitions';
+import { RevenueChartSkeleton } from '../../skeletons';
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -10,19 +11,43 @@ import { Revenue } from '@/src/lib/definitions';
 // https://www.chartjs.org/
 // https://airbnb.io/visx/
 
-export default function RevenueChart({
-  revenue,
-}: {
-  revenue: Revenue[];
-}) {
+
+/**
+ * --- START SECTIONS OF GET SERVER SIDE PROPS
+ * This section could be more easy to use with 'use server' but that only works with app dir
+ */
+import { fetchRevenue } from '@/src/lib/data';
+
+export default function RevenueChart() {
   const chartHeight = 350;
   // NOTE: Uncomment this code in Chapter 7
 
+  const [load, setLoad ] = useState<String>('loading');
+  const [revenue, setRevenue ] = useState<Revenue[]>([]);
+  
+  useEffect(() => {
+    (async () =>{
+      setRevenue(await fetchRevenue());
+    })()
+    .catch(
+      console.error
+    ).finally(()=>{
+      setLoad('loaded');
+    });
+
+  }, []);
+
   const { yAxisLabels, topLabel } = generateYAxis(revenue);
 
+
+  
+  if (load === 'loading') {
+    return <RevenueChartSkeleton />;
+  };
+  
   if (!revenue || revenue.length === 0) {
     return <p className="mt-4 text-gray-400">No data available.</p>;
-  }
+  };
 
   return (
     <div className="w-full md:col-span-4">

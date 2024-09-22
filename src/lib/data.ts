@@ -8,6 +8,7 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { revenue as REVENUE } from '@/src/lib/placeholder-data';
 
 export async function fetchRevenue() {
   try {
@@ -15,7 +16,7 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -24,6 +25,7 @@ export async function fetchRevenue() {
     return data.rows;
   } catch (error) {
     console.error('Database Error:', error);
+    return REVENUE;
     throw new Error('Failed to fetch revenue data.');
   }
 }

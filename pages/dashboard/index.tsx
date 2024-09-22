@@ -1,64 +1,34 @@
+import dynamic from 'next/dynamic';
+import Loading from '@/src/ui/dashboard/Loading';
+import { useState, Suspense } from 'react';
+const Dashboard = dynamic(
+  () => 
+    import('@/src/ui/dashboard'),
+  {
+    suspense:true
+  }
+);
 
-import { Card } from '@ui/dashboard/cards';
-import RevenueChart from '@ui/dashboard/revenue-chart';
-import LatestInvoices from '@ui/dashboard/latest-invoices';
-import { lusitana } from '@ui/fonts';
-import { fetchRevenue, fetchLatestInvoices, fetchCardData } from '@/src/lib/data';
-import { useState, useEffect } from 'react';
-import { Revenue, LatestInvoice, CardData } from '@/src/lib/definitions';
+const DashboardPage = () => {
+  const [ load, setLoad] = useState('loading');
 
-// fired data
-import { revenue as RE, latestInvoices as LAST_INV, cardData as CARD } from '@/src/lib/placeholder-data';
+  setTimeout(() => { // making a wait
+    setLoad('loaded');
+  },600);
 
-export default function Page() {
-  const [revenue, setRevenue ] = useState<Revenue[]>([]);
-  const [latestInvoices, setLatestInvoices ] = useState<LatestInvoice[]>([]);
-  const [cardData, setCardData] = useState<CardData>({
-    numberOfCustomers:0,
-    numberOfInvoices:0,
-    totalPaidInvoices:0,
-    totalPendingInvoices:0,
-  });
-
-  useEffect(() => {
-    Promise.all([
-      // fetching revenue
-      fetchRevenue(),
-      fetchLatestInvoices(),
-      fetchCardData
-    ]).then(([res1,res2]) => {
-      setRevenue(res1);
-      setLatestInvoices(res2);
-      
-    })
-    .catch((err)=>{
-      // console.error(err);
-      setRevenue(RE);
-      setLatestInvoices(LAST_INV);
-      setCardData(CARD);
-    });
-    
-  }, []);
-
+  /**HERE THE SUSPENSE IS UNNECESARY, BUT FOR LEARN IT WAS ADDED
+   * -- THE SUSPENSE IS MORE USSEFULL IN COMPONENTES REDERED AT THE SERVER SIDE
+   * --- OR WHE IS FETCHING DATA 
+   */
   return (
-    <main>
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Dashboard
-      </h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card title="Collected" value={cardData.totalPaidInvoices} type="collected" />
-        <Card title="Pending" value={cardData.totalPendingInvoices} type="pending" />
-        <Card title="Total Invoices" value={cardData.numberOfInvoices} type="invoices" />
-        <Card
-          title="Total Customers"
-          value={cardData.numberOfCustomers}
-          type="customers"
-        />
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <RevenueChart revenue={revenue}  />
-        <LatestInvoices latestInvoices={latestInvoices} />
-      </div>
-    </main>
+    load === 'loaded'
+      ?(
+        <Suspense fallback={<Loading />}>
+          <Dashboard />
+        </Suspense>
+      ):(
+        <Loading />
+      )
   );
-}
+};
+export default DashboardPage;

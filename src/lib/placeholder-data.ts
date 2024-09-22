@@ -155,8 +155,8 @@ const latestInvoices = [
   {
     id:'a4e5137b-841e-4696-80a5-4af907170895',
     name:'Delba de Oliveira',
-    image_url:'/customers/delba-de',
-    email:'oliveira.png	delba@',
+    image_url:'/customers/delba-de-oliveira.png',
+    email:'delba@orban.com',
     amount:'500'
   },
   {
@@ -185,8 +185,8 @@ const latestInvoices = [
 const cardData = {
   numberOfCustomers:6,
   numberOfInvoices:13,
-  totalPaidInvoices:100626,
-  totalPendingInvoices:125632,
+  totalPaidInvoices:'100626',
+  totalPendingInvoices:'125632',
 }
 
 export { users, customers, invoices, revenue, latestInvoices, cardData };
