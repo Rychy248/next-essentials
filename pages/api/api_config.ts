@@ -1,6 +1,3 @@
-/**
- * @deprecated this was moved to pages/api, to setUp an api and protect the .envs data
- */
 import { sql } from '@vercel/postgres';
 import {
   CustomerField,
@@ -9,14 +6,15 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
-} from './definitions';
-import { formatCurrency } from './utils';
+} from '@/src/lib/definitions'
+import { formatCurrency } from '@/src/lib/utils'
 import { revenue as REVENUE } from '@/src/lib/placeholder-data';
-import { ITEMS_PER_PAGE } from '@/configs/api-config';
-/**
- * @deprecated this was moved to pages/api, to setUp an api and protect the .envs data
- */
+
 export async function fetchRevenue() {
+  console.log("process.env.POSTGRES_DATABASE")
+  console.log(process.env.POSTGRES_DATABASE)
+  console.log(process.env.NEXT_PUBLIC_NODE_ENV)
+  console.log(process.env)
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
@@ -90,9 +88,7 @@ export async function fetchCardData() {
   }
 }
 
-/**
- * @deprecated this was moved to pages/api, to setUp an api and protect the .envs data
- */
+const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,

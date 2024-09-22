@@ -1,17 +1,67 @@
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { UpdateInvoice, DeleteInvoice } from '@ui/invoices/buttons';
 import InvoiceStatus from '@ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/src/lib/utils';
-import { fetchFilteredInvoices } from '@/src/lib/data';
+import { InvoicesTable as InvoiceTableType } from '@/src/lib/definitions';
+import { InvoicesTableSkeleton } from '@ui/skeletons';
+import { useSearchParams } from 'next/navigation';
 
-export default async function InvoicesTable({
+interface TableResponse {
+  invoicesTable:InvoiceTableType[];
+};
+
+export default function InvoicesTable({
   query,
-  currentPage,
+  // currentPage,
 }: {
-  query: string;
-  currentPage: number;
+  query:string,
+  // currentPage:number,
 }) {
-  const invoices = await fetchFilteredInvoices(query, currentPage);
+  
+  /** GET THE CURRENT PAGE AT THIS WAY IS POSSIBLE CAUSE THIS COMPONENT IS AT THE CLIENT SIDE */
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get('currentPage')) || 1;
+  /** GET THE CURRENT INSTEAD OF PROPS*/
+  
+  const [load, setLoad] = useState<string>('loading');
+  const [invoices, setInvoices] = useState<InvoiceTableType[]>([]);
+  // const invoices = await fetchFilteredInvoices(query, currentPage);
+  useEffect(() => {
+    let isMounted: boolean = true;
+    setLoad('loading');
+    (async function(){
+      try {
+        let paramsUrl = '';
+        if (query || currentPage) {
+          paramsUrl += '?';
+        };
+        if(query){
+          paramsUrl += query ? `query=${query}` :'';
+          paramsUrl += `&currentPage=${currentPage ?? 1}`;
+        }else if(currentPage){
+          paramsUrl += `currentPage=${currentPage ?? 1}`;
+        };
+        const res = await fetch(`/api/filteredInvoices${paramsUrl}`);
+        const result: TableResponse = await res.json();
+        if(isMounted) setInvoices(result.invoicesTable); ;
+      } catch (error) {
+        // console.log(error);
+      } finally{
+        if(isMounted) setLoad('loaded'); ;
+      };
+    })()
+      .catch(console.log)
+    ;
+
+    return () => { isMounted = false; };
+
+  }, [query,currentPage]);
+
+  if (load === 'loading') {
+    return(<InvoicesTableSkeleton />);
+  };
 
   return (
     <div className="mt-6 flow-root">
@@ -53,7 +103,16 @@ export default async function InvoicesTable({
                 </div>
               </div>
             ))}
+            
+            {
+              (!invoices || invoices.length == 0) && (
+                <div className="flex items-center justify-between border-b pb-4">
+                  <h1>No registers founded</h1>
+                </div>
+              )
+            }
           </div>
+
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
@@ -115,6 +174,17 @@ export default async function InvoicesTable({
                   </td>
                 </tr>
               ))}
+                          {
+              (!invoices || invoices.length == 0) && (
+                <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+                  <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center" colSpan={6}>
+                    
+                      <h1>No registers founded</h1>
+                    
+                  </td>
+                </tr>
+              )
+              }
             </tbody>
           </table>
         </div>

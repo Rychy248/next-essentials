@@ -9,6 +9,25 @@ const Dashboard = dynamic(
   }
 );
 
+// https://nextjs.org/learn/dashboard-app/partial-prerendering
+// WITH APP DIR, we can use the experimental:
+// pre-rendering to achive a loading combining the static and dynamic render
+// this is still experimental
+// and only need to set into the next.config.js 
+/**
+### next.config.js
+  const nextConfig = {
+    experimental: {
+      ppr: 'incremental',
+    },
+  };
+
+###  in the file where we will need the config
+export const experimental_ppr = true;
+// only that line because next automatically know what is static and dynamic 
+// based on the suspense and fallback wrapped code.
+ */
+
 const DashboardPage = () => {
   const [ load, setLoad] = useState('loading');
 
