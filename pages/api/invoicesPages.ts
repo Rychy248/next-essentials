@@ -3,15 +3,19 @@ import { sql } from '@vercel/postgres';
 
 import { ITEMS_PER_PAGE } from '@/configs/api-config';
 
-type ResponseData = {
+type GetResponseData = {
   totalPages: number
+};
+
+type DeleteResponse={
+  success:Boolean
 };
 
 interface QueryParams{ query?:string; };
 
 async function GET(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<GetResponseData>
 ) {
   try {
     const reqQuery: QueryParams = req.query;
@@ -47,16 +51,35 @@ async function GET(
   };
 };
 
+
+async function DELETE(
+  req: NextApiRequest,
+  res: NextApiResponse<DeleteResponse>
+) {
+  try {
+    const reqQuery : { id?:string } = req.query;
+    const result = await sql`DELETE FROM invoices WHERE id = ${reqQuery.id}`;
+    res.status(200).json({
+      success: result.rowCount > 0
+    });
+  } catch (error) {
+    res.status(500).json({
+      success:false
+    });
+  };
+};
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<DeleteResponse|GetResponseData>
 ) {
-  console.log("ENDOINT REACHED")
   try {
     if(req.method === 'GET'){
       return GET(req, res);
     };
-    
+    if(req.method === 'DELETE'){
+      return DELETE(req, res);
+    };
   } catch (error) {
     console.error('GET ENDPOINT ERROR:', error);
     res.status(200).json({

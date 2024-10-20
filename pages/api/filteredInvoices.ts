@@ -23,9 +23,7 @@ async function GET(
     const reqQuery: QueryParams = req.query;
     const query = reqQuery.query || '';
     const currentPage = reqQuery.currentPage || 1;
-    console.log(reqQuery)
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-    console.log(currentPage)
     const invoices = await sql<InvoicesTable>`
       SELECT
         invoices.id,

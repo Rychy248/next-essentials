@@ -33,7 +33,7 @@ const DashboardPage = () => {
 
   setTimeout(() => { // making a wait
     setLoad('loaded');
-  },600);
+  },100);
 
   /**HERE THE SUSPENSE IS UNNECESARY, BUT FOR LEARN IT WAS ADDED
    * -- THE SUSPENSE IS MORE USSEFULL IN COMPONENTES REDERED AT THE SERVER SIDE

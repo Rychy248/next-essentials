@@ -1,4 +1,4 @@
-'use server'
+'use client'
 import Form from '@ui/invoices/create-form';
 import Breadcrumbs from '@ui/invoices/breadcrumbs';
 

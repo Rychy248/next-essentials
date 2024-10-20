@@ -33,7 +33,7 @@ export default async function handler(
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    // await new Promise((resolve) => setTimeout(resolve, 1200));
     if(req.method === 'GET'){
       return GET(req, res);
     };
