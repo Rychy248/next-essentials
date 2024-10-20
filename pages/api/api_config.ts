@@ -11,16 +11,16 @@ import { formatCurrency } from '@/src/lib/utils'
 import { revenue as REVENUE } from '@/src/lib/placeholder-data';
 
 export async function fetchRevenue() {
-  console.log("process.env.POSTGRES_DATABASE")
-  console.log(process.env.POSTGRES_DATABASE)
-  console.log(process.env.NEXT_PUBLIC_NODE_ENV)
-  console.log(process.env)
+  // console.log("process.env.POSTGRES_DATABASE")
+  // console.log(process.env.POSTGRES_DATABASE)
+  // console.log(process.env.NEXT_PUBLIC_NODE_ENV)
+  // console.log(process.env)
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
     // console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    // await new Promise((resolve) => setTimeout(resolve, 1200));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -29,7 +29,6 @@ export async function fetchRevenue() {
   } catch (error) {
     console.error('Database Error:', error);
     return REVENUE;
-    throw new Error('Failed to fetch revenue data.');
   }
 }
 

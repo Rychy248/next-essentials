@@ -1,5 +1,6 @@
 /**
  * @deprecated this was moved to pages/api, to setUp an api and protect the .envs data
+ * THE FUNCTIOS HERE, CAN BU USED DIRECTLY FOR THE SERVER COMPONENTS SIDE. Not from the frontend
  */
 import { sql } from '@vercel/postgres';
 import {
@@ -22,7 +23,7 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     // console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    // await new Promise((resolve) => setTimeout(resolve, 1200));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -128,6 +129,11 @@ export async function fetchFilteredInvoices(
   }
 }
 
+/**
+ * Preference, consume this at the server side, not from the client side, because all the vars would be exposed and it will not work as an API
+ * @param query 
+ * @returns 
+ */
 export async function fetchInvoicesPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
@@ -170,7 +176,7 @@ export async function fetchInvoiceById(id: string) {
     return invoice[0];
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    return false;
   }
 }
 
@@ -187,6 +193,8 @@ export async function fetchCustomers() {
     const customers = data.rows;
     return customers;
   } catch (err) {
+    console.log(err);
+    
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all customers.');
   }
