@@ -1,21 +1,21 @@
-
-'use server'
-import Form from '@ui/invoices/edit-form';
-import Breadcrumbs from '@ui/invoices/breadcrumbs';
+import Form from '@/app/ui/invoices/edit-form';
+import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
-import { fetchCustomers, fetchInvoiceById } from '@/src/lib/data'; // if this would be wanted to use in the frontend side, we have to move this to the api/
+import { Metadata } from 'next';
 
-export default async function Page(
-  { params }:{ params: { id:string }} //destructured param
-) {
+export const metadata: Metadata = {
+  title: 'Edit Invoice',
+};
+
+export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
-
   const [invoice, customers] = await Promise.all([
     fetchInvoiceById(id),
-    fetchCustomers()
+    fetchCustomers(),
   ]);
 
-  if(!invoice){
+  if (!invoice) {
     notFound();
   }
 
