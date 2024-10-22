@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { generateOTP, sendOTPEmail, verifyOTP } from './mfa';
+import { users } from '@/app/lib/placeholder-data';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -123,17 +125,71 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
+  console.log('Authenticate function called');
+
   try {
-    await signIn('credentials', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (!user) {
+      return { message: 'ERROR', error: 'Invalid credentials.' };
     }
-    throw error;
+
+    // Generar OTP
+    const { secret, token } = generateOTP();
+    console.log(`OTP generated for ${email}: ${token}`);
+
+    // almacena el secreto y las credenciales temporalmente
+    // @ts-ignore
+    global.tempSecret = { secret, email, password };
+
+    return { message: 'OTP_SENT', otp: token };
+  } catch (error) {
+    console.error('Error in authenticate function:', error);
+    return { message: 'ERROR', error: 'An error occurred during authentication.' };
+  }
+}
+
+export async function verifyMFA(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  console.log('Verifying MFA');
+  const otp = formData.get('otp') as string;
+  // @ts-ignore
+  const { secret, email, password } = global.tempSecret || {};
+
+  if (!secret || !email) {
+    return 'OTP expired. Please try again.';
+  }
+
+  if (verifyOTP(secret, otp)) {
+    console.log('OTP verified successfully');
+    // @ts-ignore
+    delete global.tempSecret;
+    
+    try {
+      await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+      
+      return 'success';
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case 'CredentialsSignin':
+            return 'Invalid credentials.';
+          default:
+            return 'Something went wrong.';
+        }
+      }
+      throw error;
+    }
+  } else {
+    return 'Invalid OTP. Please try again.';
   }
 }
