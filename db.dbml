@@ -1,0 +1,413 @@
+enum user_state {
+  active
+  unnactive
+}
+Table user{
+  user_id int [PK]
+  full_name varchar
+  full_last_name varchar
+  email varchar
+  phone_number narchar(8)
+  uid varchar(64)
+  salt narchar(64)
+  hash narchar(125)
+  state user_state
+  date_of date
+  created_at date [default: `now()`]
+}
+
+table state { //departamentos
+  state_id int [PK]
+  name varchar
+  description varchar
+  state varchar
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+table city{ // municipios
+  city_id int PK
+  name varchar
+  description varchar
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  state_id int [ref: > state.state_id] //departamento
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+
+table zone {
+  zone_id int [PK]
+  name varchar
+  description varchar
+  city_id int [Ref: > city.city_id]
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+
+
+enum customer_state{
+  active
+  unnactive
+  unverified // register but email not verified
+}
+Table customer {
+  customer_id int [PK]
+  full_name varchar
+  full_last_name varchar
+  email varchar
+  phone_number narchar(8)
+  uid varchar(64)
+  salt narchar(64)
+  hash narchar(125)
+  state customer_state
+  date_of date
+  created_at date [default: `now()`]
+}
+
+
+Table correlative {
+  correlative_id in [PK]
+  correlative_number varchar
+  titular_name varchar
+  relation_with_titular varchar
+  nit varchar
+  phone nchar(8)
+  cui  nchar(13)
+  email varchar
+  recibe_email_bills boolean
+  service_address  varchar
+  payment_address varchar
+  counter varchar // contador
+  state varchar
+  date_of  date
+  created_at  date [default :`now()`]
+  updated_at  date
+  state_id int [ref: > state.state_id] //departamento
+  city_id int [ref: > city.city_id]
+  customer_id int [ref : > customer.customer_id]
+}
+// other possible way to do it
+// Ref correlative_belongs_to_customer {correlative.customer_id > customer.customer_id}
+   
+
+
+Table history_Payments{
+  payment_history_id int [PK]
+  amount varchar
+  payment_status varchar
+  transaction_reference varchar
+  created_at varchar
+  payment_method varchar // the payment method used, online banc, neolink etc..
+  correlative_id int [ref: > correlative.correlative_id]
+  customer_id  int [ref: > customer.customer_id]
+}
+
+Table ticket{
+  ticket_id int [PK]
+  object_id varchar // returned by the eegsa api
+  ticket_number varchar
+  process_name varchar
+  type varchar
+  category varchar
+  Status varchar
+  file_url varchar
+  Description varchar
+  Created_at varchar
+  resolutionDate varchar
+  created_at date
+  updated_at date
+  customer_id  int [ref: > customer.customer_id]
+  correlative_id int [ref: > correlative.correlative_id]
+}
+
+Table contact{
+  contact_id int [PK]
+  type varchar
+  name varchar
+  value varchar
+  status varchar
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+Table device_session{
+  device_id int [PK]
+  session_active varchar
+  ip_address varchar
+  device_name varchar
+  device_info varchar
+  device_token varchar
+  biometric_token varchar
+  logint_time date
+  logout_time date
+  customer_id  int [ref: > customer.customer_id]
+}
+
+enum campaing_order{
+  "1"
+  "2"
+  "3"
+}
+Table campaign{
+  campaign_id int [PK]
+  campaign_name varchar
+  description varchar
+  state boolean
+  icon varchar
+  order campaing_order
+  expiry_date datetime
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+Table notification_history{
+  notification_history_id int [PK]
+  sent_at varchar
+  read_status varchar
+  create_at date
+  notification_id int [ref: > notification.notification_id]
+  customer_id int [ ref: > customer.customer_id]
+}
+
+Table notification_log {
+  notification_log_id int [PK]
+  log varchar
+  created_at date
+  notification_id int [ref: > notification.notification_id]
+  customer_id  int [ref: > customer.customer_id]
+}
+
+Table notification{
+  notification_id int [PK]
+  name varchar
+  description varchar
+  type varchar
+  final boolean
+  state boolean
+  client varchar // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  correlative varchar // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  counter varchar // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  amount varchar // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  date varchar // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  ticket_number varchar // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  ticket_state boolean // # This field, defined to be loaded at the description field, at the DERCAS, but it was moved into an optional field
+  sended_at date
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+
+}
+Table payment_methods{
+  payment_method_id int [PK]
+  payment_method_name varchar
+  description varchar
+  state boolean
+  icon varchar
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+Table mobile_bank{
+  mobile_bank_id int [PK]
+  name varchar
+  description varchar
+  web_site varchar
+  icon_link varchar
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+Table window_bank{
+  window_bank_id int [PK]
+  name varchar
+  description varchar
+  web_site varchar
+  icon_link varchar
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+Table atm_box{
+  atm_box_id int [PK]
+  name varchar
+  description varchar
+  web_site varchar
+  icon_link varchar
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+// Credit card (possible)
+// Description
+// If a automatic payment will be implemented
+// Properties
+// •	credit_card_id: PK (Identificador único de la tarjeta de crédito)
+// •	card
+// •	holder_name: Nombre del titular de la tarjeta (como aparece en la tarjeta)
+// •	card_number: Número de la tarjeta de crédito (almacenado de forma tokenizada o encriptada por razones de seguridad)
+// •	cvv: Código de seguridad de la tarjeta (almacenado encriptado, si es necesario)
+// •	expire_month: Mes de expiración de la tarjeta
+// •	expire_year: Año de expiración de la tarjeta
+// •	billing_address: Dirección de facturación asociada con la tarjeta (opcional, pero recomendado)
+// •	state: Estado de la tarjeta (activo/inactivo, para controlar si se puede usar o no)
+// •	created_at: Fecha y hora en que se registró la tarjeta
+// •	updated_at: Fecha y hora de la última modificacióncustomer_id: FK hacia Users (Usuario que posee la tarjeta de crédito)
+// •	customer_id
+
+Table Parameters{
+  parameter_id int [PK]
+  name varchar
+  description varchar
+  value varchar
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+// default_registers 
+// 	Number of rows for each page at portal admin. (Deployment of data)
+// 	Messague conection service (This cotains the enpoint of the messague services, and credentials)
+// 	Payment method conection (This Will contains all the payment method, conection credentials)
+// 	Allow_turn_off_devices_sessions
+// 	Range of days for each date filter consult
+// 	URL notifications service
+// 	URL neonet service
+// •	notification: Descripción de la notificación enviada cuando se realiza un cambio (opcional)
+
+Table role{
+  role_id int [PK]
+  role_name varchar
+  description varchar
+}
+
+Table permission{
+  permission_id int [PK]
+  permission_name varchar
+  description varchar
+}
+
+Table role_permissions{
+  role_permissions_id int [PK]
+  role_id int [ref: > role.role_id]
+  permission_id int [ref: > permission.permission_id]
+}
+
+Table user_permissions{
+  User_permissions_id int [PK]
+  user_id int [ref: > user.user_id]
+  permission_id int [ref: > permission.permission_id]
+}
+Table role_user{
+  role_user_id int [PK]
+  role_id int [ref: > role.role_id]
+  user_id int [ref: > user.user_id]
+}
+
+Table user_activities{
+  activity_id int [PK]
+  activity_type varchar
+  entity_affected varchar
+  role varchar
+  permission varchar
+  description varchar
+  ip_address varchar
+  device_info varchar
+  created_at date [ default: `now()`]
+  user_id int [ref: > user.user_id]
+}
+
+Table online_service{
+  online_service_id int [PK]
+  service_name varchar
+  description varchar
+  status varchar
+  icon_link varchar
+  require_gps_data varchar
+  ticket_type varchar
+  ticket_category varchar
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+Table online_service_form{
+  online_services_form int [PK]
+  online_service_id int [ref: > online_service.online_service_id]
+  form_id int [ref: > form.form_id]
+}
+
+Table online_contract{
+  online_contract_id int [PK]
+  contract_name varchar
+  description varchar
+  status varchar
+  icon_url varchar
+  require_gps_data varchar
+  ticket_type varchar
+  ticket_category varchar
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+
+// TODO: Add another table for online_contracts_forms
+Table online_contract_form{
+  online_contract_form int [PK]
+  online_contract_id int [ref: > online_contract.online_contract_id]
+  form_id int [ref: > form.form_id]
+}
+
+
+Table form{
+  form_id int [PK]
+  file_url varchar
+  name varchar
+  description varchar
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
+// TODO: At the ER diagram, this will be related to online_services or online_contracts, through an intermediated table.
+
+Table services_center{
+  center_id int [PK]
+  name varchar
+  description varchar
+  service_type varchar
+  geo_location varchar
+  address varchar
+  phone varchar
+  state boolean
+  created_at date [ default: `now()`]
+  updated_at date
+  created_by int [ref: > user.user_id]
+  updated_by int [ref: > user.user_id]
+}
